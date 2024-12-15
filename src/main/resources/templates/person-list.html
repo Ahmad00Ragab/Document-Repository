@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Person List</title>
+    <!-- <link rel="stylesheet" th:href="@{/webjars/bootswatch/dist/flatly/bootstrap.css}"> -->
+    <link th:replace="layout/default-layout::link">
+    <script type="text/javascript">
+      function submitForm() {
+        document.getElementById("filterForm").submit();
+      }
+    </script>
+</head>
+
+<!-- <body>
+  <div class="container">
+    <h1> People List</h1> -->
+
+    <body th:replace="layout/default-layout::body(title='People List')">
+        <div th:fragment="content">
+        <!--   <a th:href="@{/persons/create}" class="btn btn-primary">Add Person</a> <br /><br /> -->
+        <div class="row mt-3 mb-4">
+          <div class="col-8">
+            <a class="btn btn-primary" th:href="@{/persons/create}">Add Person</a>
+          </div>
+          <div class="col-4">
+            <p><strong>Sort by Age:</strong></p>
+            <form th:action="@{/persons/filter}" method="get" id="filterForm">
+              <label><input type="radio" name="sortByAge" value="asc" th:checked="${sortByAge=='asc'}"
+                  onchange="submitForm()"> Ascending</label>
+              <label><input type="radio" name="sortByAge" value="desc" th:checked="${sortByAge=='desc'}"
+                  onchange="submitForm()"> Descending</label>
+            </form>
+    
+          </div>
+        </div>
+          <table class="table table-hover" th:unless="${#lists.isEmpty(persons)}">
+            <tr class="table-dark">
+              <th>id</th>
+              <th>Name</th>
+              <th>Age</th>
+              <th>Age Group</th>   
+              <th>Photo</th>
+              <th>Actions</th>
+            </tr>
+            <tr th:each="person,state:${persons}" th:class="${state.even}?table-light:''">
+              <td th:text="${person.id}"></td>
+              <td th:text="${person.name}"></td>
+              <td th:text="${person.Age}"></td>
+              <td th:text="${person.ageGroup}?${person.ageGroup.groupName}:'ND'"></td>
+              <td><img th:src="(${person.photo}?@{|/images/${person.photo}|}:@{'/images/default.png'})" alt="photo"
+                  class="img-rounded img-responsive" style="max-height: 50px; max-width: 50px;"></td>
+              <td>
+                <div class="row">
+                  <form class="col-6" th:action="@{|/persons/${person.id}/edit|}" method="get">
+                    <input type="submit" class="btn btn-success" value="Update">
+                  </form>
+                  <form class="col-6" th:action="@{|/persons/${person.id}/delete|}" method="Post">
+                    <input type="submit" class="btn btn-danger" value="Delete">
+                  </form>
+                </div>
+              </td>
+            </tr>
+          </table>
+          <div class="alert alert-warning" th:if="${#lists.isEmpty(persons)}">
+            No person found !
+          </div>
+          <!-- <div>
+            <ul class="pagination pagination-sm">
+              <li class="page-item" th:classappend="${currentPage==0?'disabled':''}">
+                <a class="page-link" th:href="@{|/persons?page=${currentPage-1}|}">&laquo;</a>
+              </li>
+              <li th:each="index: ${#numbers.sequence(0,totalPages -1)}" class="page-item"
+                  th:classappend="${currentPage==index ?'active':''}">
+                <a class="page-link"th:href="@{|/persons?page=${index}|}" th:text="${index+1}"></a>
+              </li>
+             
+              <li class="page-item"  th:classappend="${currentPage== totalPages -1?'disabled':''}">
+                <a class="page-link" th:href="@{|/persons?page=${currentPage+1}|}">&raquo;</a>
+              </li>
+            </ul>
+          </div>  -->
+          <div>
+            <ul class="pagination pagination-sm">
+              <li class="page-item" th:classappend="${currentPage==0?'disabled':''}">
+                <a class="page-link" th:href="${sortByAge==null}?@{|/persons?page=${currentPage-1}|}:@{|/persons/filter?sortByAge=${sortByAge}&page=${currentPage-1}|}">&laquo;</a>
+              </li>
+              <li th:each="index: ${#numbers.sequence(0,totalPages -1)}" class="page-item"    
+                  th:classappend="${currentPage==index ?'active':''}">
+                <a class="page-link"th:href="${sortByAge==null}?@{|/persons?page=${index}|}:@{|/persons/filter?sortByAge=${sortByAge}&page=${index}|}" th:text="${index+1}"></a>
+              </li>
+             
+              <li class="page-item"  th:classappend="${currentPage== totalPages -1?'disabled':''}">
+                <a class="page-link" th:href="${sortByAge==null}?@{|/persons?page=${currentPage+1}|}:@{|/persons/filter?sortByAge=${sortByAge}&page=${currentPage+1}|}">&raquo;</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        </div>      
+</body>
+
+</html>
