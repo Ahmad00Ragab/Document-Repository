@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Modifier une Catégorie</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <h1>Modifier une Catégorie</h1>
+    <form th:action="@{/categorie/update/{id}(id=${categorie.id})}" th:object="${categorie}" method="post">
+        <div class="form-group">
+            <label for="theme">Thème</label>
+            <input type="text" id="theme" th:field="*{theme}" class="form-control" placeholder="Entrer le thème" required>
+        </div>
+        <button type="submit" class="btn btn-success">Mettre à jour</button>
+        <a href="/categorie" class="btn btn-secondary">Retour à la liste</a>
+    </form>
+</div>
+</body>
+</html>

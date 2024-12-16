@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Ajouter une Catégorie</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 50px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .btn {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1><i class="fas fa-plus"></i> Ajouter une Catégorie</h1>
+    <form th:action="@{/categorie}" th:object="${categorie}" method="post">
+        <div class="form-group">
+            <label for="theme">Thème</label>
+            <input type="text" id="theme" th:field="*{theme}" class="form-control" placeholder="Entrez le thème" required>
+        </div>
+        <button type="submit" class="btn btn-success">Ajouter</button>
+        <a href="/categorie" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+</body>
+</html>

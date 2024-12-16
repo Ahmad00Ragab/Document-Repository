@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Documents</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">Accueil</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="/auteurs">Liste des Auteurs</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/categorie">Liste des Catégories</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-4">
+    <h3 class="mb-4">Ajouter un Document</h3>
+
+    <form action="/documents" method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="titre" class="form-label">Titre</label>
+            <input type="text" class="form-control" id="titre" name="titre" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="contenu" class="form-label">Contenu</label>
+            <textarea class="form-control" id="contenu" name="contenu" rows="4" required></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="datePublication" class="form-label">Date de Publication</label>
+            <input type="date" class="form-control" id="datePublication" name="datePublication" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="typeFichier" class="form-label">Type de Fichier</label>
+            <input type="text" class="form-control" id="typeFichier" name="typeFichier">
+        </div>
+
+        <div class="mb-3">
+            <label for="resume" class="form-label">Résumé</label>
+            <textarea class="form-control" id="resume" name="resume" rows="3"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="motCle" class="form-label">Mots-clés</label>
+            <input type="text" class="form-control" id="motCle" name="motCle">
+        </div>
+
+        <div class="mb-3">
+            <label for="auteur" class="form-label">Auteur</label>
+            <select id="auteur" class="form-select" name="auteur.id" required>
+                <option th:each="auteur : ${auteurs}" th:value="${auteur.id}" th:text="${auteur.nom}"></option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="categorie" class="form-label">Catégorie</label>
+            <select id="categorie" class="form-select" name="categorie.id" required>
+                <option th:each="categorie : ${categories}" th:value="${categorie.id}" th:text="${categorie.theme}"></option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="file" class="form-label">Télécharger le fichier</label>
+            <input type="file" class="form-control" id="file" name="file" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Ajouter</button>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

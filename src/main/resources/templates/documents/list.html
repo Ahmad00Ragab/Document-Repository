@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Documents</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">Accueil</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="/auteurs">Liste des Auteurs</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/categorie">Liste des Catégories</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-4">
+    <!-- Titre de recherche de documents réduit -->
+    <h3 class="mb-4">Recherche de Documents</h3>
+
+    <!-- Formulaire de recherche -->
+    <form action="#" th:action="@{/documents/search}" method="get" class="mb-4">
+        <div class="row">
+            <div class="col-md-3">
+                <input type="text" name="motCle" class="form-control" placeholder="Mot-clé" />
+            </div>
+            <div class="col-md-3">
+                <input type="text" name="titre" class="form-control" placeholder="Titre" />
+            </div>
+            <div class="col-md-3">
+                <input type="text" name="auteur" class="form-control" placeholder="Auteur" />
+            </div>
+            <div class="col-md-3">
+                <input type="text" name="categorie" class="form-control" placeholder="Catégorie" />
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Rechercher</button>
+        <label>
+            <input type="radio" name="order" value="asc" th:checked="${order == 'asc'}"> Ordre Croissant
+        </label>
+        <label>
+            <input type="radio" name="order" value="desc" th:checked="${order == 'desc'}"> Ordre Décroissant
+        </label>
+        <button type="submit" class="btn btn-primary">Appliquer</button>
+    </form>
+
+    <!-- Bouton d'ajout de document -->
+    <div class="mb-3 text-end">
+        <a href="/documents/new" class="btn btn-success">Ajouter un Document</a>
+    </div>
+
+    <!-- Titre de la liste des documents -->
+    <h1>Liste des Documents</h1>
+
+    <!-- Table des documents -->
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Titre</th>
+                <th>Résumé</th>
+                <th>Catégorie</th>
+                <th>Auteur</th>
+                <th>Date de Publication</th>
+                <th>Contenu</th>
+                <th>Mot-clé</th>
+                <th>Type de Fichier</th>
+                <th>Fichier</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="document : ${documents}">
+                <td th:text="${document.titre}"></td>
+                <td th:text="${document.resume}"></td>
+                <td th:text="${document.categorie.theme}"></td>
+                <td th:text="${document.auteur.nom}"></td>
+                <td th:text="${document.datePublication}"></td>
+                <td th:text="${document.contenu}"></td>
+                <td th:text="${document.motCle}" class="align-middle"></td>
+                <td th:text="${document.typeFichier}"></td>
+                <td><a th:href="@{/documents/download/{filename}(filename=${document.cheminFichier})}" class="btn btn-primary" download>Télécharger</a></td>
+
+                
+                <td>
+                    <a th:href="@{/documents/edit/{id}(id=${document.id})}" class="btn btn-warning">Modifier</a>
+                    <a th:href="@{/documents/delete/{id}(id=${document.id})}" class="btn btn-danger">Supprimer</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</div>
+</body>
+</html>
