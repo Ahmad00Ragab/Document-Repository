@@ -3,11 +3,19 @@
 <head>
     <title>Liste des Catégories</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .btn-spacing {
+            margin-right: 10px;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
     <h1>Liste des Catégories</h1>
-    <a href="/categorie/new" class="btn btn-primary">Ajouter une Catégorie</a>
+    <div class="mb-3">
+        <a href="/categorie/new" class="btn btn-primary btn-spacing">Ajouter une Catégorie</a>
+        <a href="/documents" class="btn btn-secondary btn-spacing">Liste des Documents</a>
+    </div>
     <table class="table">
         <thead>
         <tr>
@@ -21,8 +29,8 @@
             <td th:text="${categorie.id}"></td>
             <td th:text="${categorie.theme}"></td>
             <td>
-                <a th:href="@{/categorie/edit/{id}(id=${categorie.id})}" class="btn btn-warning">Modifier</a>
-                <a th:href="@{/categorie/delete/{id}(id=${categorie.id})}" class="btn btn-danger" 
+                <a th:href="@{/categorie/edit/{id}(id=${categorie.id})}" class="btn btn-warning btn-sm btn-spacing">Modifier</a>
+                <a th:href="@{/categorie/delete/{id}(id=${categorie.id})}" class="btn btn-danger btn-sm" 
                    onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?');">Supprimer</a>
             </td>
         </tr>

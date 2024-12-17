@@ -27,6 +27,9 @@
             background-color: #e53e3e;
             border-color: #e53e3e;
         }
+        .btn-spacing {
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
@@ -35,15 +38,16 @@
     </header>
     <main class="container">
         <div class="text-end mb-3">
-            <a th:href="@{/auteurs/new}" class="btn btn-primary">Ajouter un Auteur</a>
-            <form method="get" action="/auteurs">
+            <a th:href="@{/auteurs/new}" class="btn btn-primary btn-spacing">Ajouter un Auteur</a>
+            <a th:href="@{/documents}" class="btn btn-secondary btn-spacing">Liste des Documents</a>
+            <form method="get" action="/auteurs" style="display: inline;">
                 <label>
                     <input type="radio" name="order" value="asc" th:checked="${order == 'asc'}"> Ordre Croissant
                 </label>
                 <label>
                     <input type="radio" name="order" value="desc" th:checked="${order == 'desc'}"> Ordre Décroissant
                 </label>
-                <button type="submit" class="btn btn-primary">Appliquer</button>
+                <button type="submit" class="btn btn-primary btn-spacing">Appliquer</button>
             </form>
         </div>
         <table class="table table-striped shadow">
@@ -61,7 +65,7 @@
                     <td th:text="${auteur.nom}"></td>
                     <td th:text="${auteur.prenom}"></td>
                     <td>
-                        <a th:href="@{/auteurs/edit/{id}(id=${auteur.id})}" class="btn btn-warning btn-sm">Modifier</a>
+                        <a th:href="@{/auteurs/edit/{id}(id=${auteur.id})}" class="btn btn-warning btn-sm btn-spacing">Modifier</a>
                         <a th:href="@{/auteurs/delete/{id}(id=${auteur.id})}" class="btn btn-danger btn-sm">Supprimer</a>
                     </td>
                 </tr>

@@ -1,14 +1,20 @@
 package com.example.publicationdocuments.controller;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,7 +25,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import java.util.List;
+
 import com.example.publicationdocuments.model.Auteur;
 import com.example.publicationdocuments.model.Categorie;
 import com.example.publicationdocuments.model.Document;
@@ -40,36 +46,101 @@ public class DocumentController {
     @Autowired
     private CategorieService categorieService;
 
-    // Afficher la liste des documents
+    private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/src/main/resources/static/uploads/";
+
+    // Afficher la liste des documents avec pagination
     @GetMapping
-    public String listDocuments(Model model, @RequestParam(required = false) String order) {
-        model.addAttribute("documents", documentService.findAll());
+    public String listDocuments(@RequestParam(defaultValue = "0" )int page,Model model) {
+        int size = 3; // Number of documents per page
+        List<Document> totalDocuments = documentService.findAll();
+        Page<Document> documents = documentService.findAllWithPagination(PageRequest.of(page, size));
+        System.out.println("Total number of documents: " + totalDocuments.size());
+        System.out.println("Documents on current page: " + documents.getContent());
+
+        model.addAttribute("documents", documents);
+        model.addAttribute("auteurs", auteurService.findAll());
+        model.addAttribute("categories", categorieService.findAll());
+        model.addAttribute("totalDocumentsCount", totalDocuments.size());
+        model.addAttribute("totalPages", documents.getTotalPages());
+        model.addAttribute("currentPage", page);
         return "documents/list";
-    } 
-    // Formulaire pour rechercher des documents
+    }
+
+
+        // Afficher la liste des documents avec pagination
+        @GetMapping("/user")
+        public String listDocumentsForUser(@RequestParam(defaultValue = "0" )int page,Model model) {
+            int size = 10; // Number of documents per page
+            List<Document> totalDocuments = documentService.findAll();
+            Page<Document> documents = documentService.findAllWithPagination(PageRequest.of(page, size));
+            System.out.println("Total number of documents: " + totalDocuments.size());
+            System.out.println("Documents on current page: " + documents.getContent());
+    
+            model.addAttribute("documents", documents);
+            model.addAttribute("auteurs", auteurService.findAll());
+            model.addAttribute("categories", categorieService.findAll());
+            model.addAttribute("totalDocumentsCount", totalDocuments.size());
+            model.addAttribute("totalPages", documents.getTotalPages());
+            model.addAttribute("currentPage", page);
+            return "documents/list-user";
+        }
+
+    // Endpoint to download files
+    @GetMapping("/download/{filename:.+}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable String filename) {
+        System.out.println("file name : " + filename);
+        try {
+            // Define the path to the upload directory
+            Path filePath = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "static", "uploads", filename);
+
+            // Check if the file exists
+            if (!Files.exists(filePath)) {
+                throw new FileNotFoundException("Le fichier demandé est introuvable.");
+            }
+
+            // Load the file as a resource
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (!resource.exists() || !resource.isReadable()) {
+                throw new FileNotFoundException("Impossible de lire le fichier.");
+            }
+
+            // Prepare the response with headers
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                    .body(resource);
+        } catch (FileNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (IOException ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+
     @GetMapping("/search")
     public String searchDocuments(@RequestParam(required = false) String motCle,
-            @RequestParam(required = false) String titre,
-            @RequestParam(required = false) String auteur,
-            @RequestParam(required = false) String theme,
-            Model model) {
-        // Appeler le service pour effectuer la recherche avec les paramètres fournis
-        List<Document> documents = documentService.searchDocuments(motCle, titre, auteur, theme);
+                                @RequestParam(required = false) String titre,
+                                @RequestParam(required = false) String auteur,
+                                @RequestParam(required = false) String theme,
+                                @RequestParam(defaultValue = "0") int page,
+                                Model model) {
+        int size = 3; // Number of documents per page
+        Page<Document> documents = documentService.searchDocuments(motCle, titre, auteur, theme, PageRequest.of(page, size));
 
-        // Ajouter les résultats de la recherche à l'attribut "documents"
+
         model.addAttribute("documents", documents);
+        // model.addAttribute("totalDocumentsCount", documentsPage.getTotalElements());
+        model.addAttribute("totalPages", documents.getTotalPages());
+        model.addAttribute("currentPage", page);
 
-        // Ajouter un message si aucun document n'est trouvé
         if (documents.isEmpty()) {
             model.addAttribute("message", "Aucun document trouvé pour les critères de recherche donnés.");
         }
-
-        // Ajouter les autres éléments nécessaires pour le formulaire de recherche (optionnel)
         model.addAttribute("auteurs", auteurService.findAll());
         model.addAttribute("categories", categorieService.findAll());
-
         return "documents/list";
     }
+
 
     // Formulaire pour créer un nouveau document
     @GetMapping("/new")
@@ -80,53 +151,35 @@ public class DocumentController {
         return "documents/new";
     }
 
-    // Enregistrer un nouveau document avec l'upload de fichier
-    @PostMapping
+    @PostMapping("/create")
     public String saveDocument(@ModelAttribute Document document,
-                               @RequestParam("auteur.id") Long auteurId,
-                               @RequestParam("categorie.id") Long categorieId,
-                               @RequestParam("file") MultipartFile file) throws IOException {
-        Auteur auteur = auteurService.findById(auteurId);
-        Categorie categorie = categorieService.findById(categorieId);
-
-        if (auteur != null && categorie != null) {
-            document.setAuteur(auteur);
-            document.setCategorie(categorie);
-
-            // Si un fichier est téléchargé, l'enregistrer sur le serveur
+                                @RequestParam("auteur.id") Long auteurId,
+                                @RequestParam("categorie.id") Long categorieId,
+                                @RequestParam("file") MultipartFile file) {
+        try {
             if (!file.isEmpty()) {
-                String filePath = saveUploadedFile(file);
-                document.setCheminFichier(filePath);
+                String documentFileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+                Path documentPath = Paths.get(UPLOAD_DIR + documentFileName);
+
+                Files.createDirectories(documentPath.getParent());
+                Files.write(documentPath, file.getBytes());
+
+                document.setCheminFichier("/uploads/" + documentFileName);
             }
 
             documentService.save(document);
-            return "redirect:/documents"; // Rediriger vers la liste des documents après l'enregistrement
-        } else {
-            return "redirect:/documents/new?error=invalid"; // Redirection avec message d'erreur
+            return "redirect:/documents";
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "redirect:/documents";
         }
-    }
-
-    private String saveUploadedFile(MultipartFile file) throws IOException {
-        String uploadDir = "C:\\Users\\DELL\\Desktop";
-
-        Path path = Paths.get(uploadDir);
-        if (!Files.exists(path)) {
-            Files.createDirectories(path);
-        }
-
-        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-        Path filePath = path.resolve(fileName);
-
-        file.transferTo(filePath.toFile());
-
-        return "/uploads/" + fileName;
     }
 
     // Supprimer un document
     @GetMapping("/delete/{id}")
     public String deleteDocument(@PathVariable Long id) {
         documentService.deleteById(id);
-        return "redirect:/documents"; // Rediriger vers la liste des documents après la suppression
+        return "redirect:/documents";
     }
 
     // Formulaire pour éditer un document existant
@@ -145,16 +198,15 @@ public class DocumentController {
     // Mise à jour d'un document
     @PostMapping("/update/{id}")
     public String updateDocument(@PathVariable Long id,
-                                 @ModelAttribute Document document,
-                                 @RequestParam("auteur.id") Long auteurId,
-                                 @RequestParam("categorie.id") Long categorieId,
-                                 @RequestParam("file") MultipartFile file) throws IOException {
+                                  @ModelAttribute Document document,
+                                  @RequestParam("auteur.id") Long auteurId,
+                                  @RequestParam("categorie.id") Long categorieId,
+                                  @RequestParam("file") MultipartFile file) throws IOException {
         Document existingDocument = documentService.findById(id);
         if (existingDocument == null) {
             return "redirect:/documents?error=documentNotFound";
         }
 
-        // Mettre à jour les informations du document
         existingDocument.setTitre(document.getTitre());
         existingDocument.setContenu(document.getContenu());
         existingDocument.setTypeFichier(document.getTypeFichier());
@@ -169,31 +221,20 @@ public class DocumentController {
             existingDocument.setAuteur(auteur);
             existingDocument.setCategorie(categorie);
 
-            // Si un fichier est téléchargé, mettre à jour le fichier
             if (!file.isEmpty()) {
-                String filePath = saveUploadedFile(file);
-                existingDocument.setCheminFichier(filePath);
+                String documentFileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+                Path documentPath = Paths.get(UPLOAD_DIR + documentFileName);
+
+                Files.createDirectories(documentPath.getParent());
+                Files.write(documentPath, file.getBytes());
+
+                existingDocument.setCheminFichier("/uploads/" + documentFileName);
             }
 
             documentService.save(existingDocument);
             return "redirect:/documents";
         } else {
             return "redirect:/documents/edit/" + id + "?error=invalid";
-        }
-    }
-
-    // Nouvelle méthode pour télécharger un fichier
-    @GetMapping("/download/{filename}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String filename) throws IOException {
-        Path filePath = Paths.get("C:\\Users\\DELL\\Desktop").resolve(filename);
-        Resource resource = new UrlResource(filePath.toUri());
-
-        if (resource.exists() || resource.isReadable()) {
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-                    .body(resource);
-        } else {
-            throw new IOException("File not found");
         }
     }
 }

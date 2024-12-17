@@ -14,26 +14,38 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
+import com.example.publicationdocuments.service.UserService;
+
 
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
+
     @Autowired
-    private UserDetailsService uds;
+    private UserDetailsService userService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+
+    @Autowired
+    public WebSecurityConfig(UserService userService, PasswordEncoder passwordEncoder) {
+        this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/home", "/webjars/**",
-                                "/images/**")
-                        .permitAll()
-                        .anyRequest().authenticated()
-                                                
+                        .requestMatchers(
+                                "/",
+                                "/home",
+                                "/webjars/**",
+                                "/images/**"
+                        ).permitAll()
+                        .anyRequest().authenticated()                              
                 )
                 .formLogin((form) -> form
                         .loginPage("/login")
@@ -45,7 +57,7 @@ public class WebSecurityConfig {
                             if (savedRequest != null) {
                                 response.sendRedirect(savedRequest.getRequestURL());
                             } else {
-                                response.sendRedirect("/");                     
+                                response.sendRedirect("/documents");                     
                             }
                         }))
                 .exceptionHandling((exceptionHandling) -> exceptionHandling
@@ -59,7 +71,7 @@ public class WebSecurityConfig {
     @Bean
     public AuthenticationProvider authenticationProvider() {
             DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-            authenticationProvider.setUserDetailsService(uds);
+            authenticationProvider.setUserDetailsService(userService);
             authenticationProvider.setPasswordEncoder(passwordEncoder);
             return authenticationProvider;
     }

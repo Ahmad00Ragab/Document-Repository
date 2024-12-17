@@ -35,18 +35,4 @@ public class Auteur {
 
     @OneToMany(mappedBy = "auteur", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Document> documents;
-
-    @Column(name="password")
-    private String password;
-
-    @Column(name="auteur_email", unique = true)
-	private String email;
-
-	@ElementCollection(fetch= FetchType.EAGER)
-	@CollectionTable(
-			name="roles",
-			joinColumns = @JoinColumn(name="Auteur_id")
-			)
-	@Column(name="Auteur_role")
-	private List<String> roles;
 }

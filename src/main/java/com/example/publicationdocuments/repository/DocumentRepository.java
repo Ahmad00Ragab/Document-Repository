@@ -1,25 +1,22 @@
 package com.example.publicationdocuments.repository;
 
-import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.publicationdocuments.model.Document;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 public interface DocumentRepository extends JpaRepository<Document, Long> {
+    Page<Document> findByMotCleContainingAndTitreContainingAndAuteurNomContainingOrAuteurPrenomContainingAndCategorieThemeContaining(
+            String motCle, String titre, String auteurNom, String auteurPrenom, String theme, Pageable pageable);
 
-   // Recherche par mot-clé
-List<Document> findByMotCleContaining(String motCle);
+    Page<Document> findByMotCleContaining(String motCle, Pageable pageable);
 
-   // Recherche par titre
-List<Document> findByTitreContaining(String titre);
+    Page<Document> findByTitreContaining(String titre, Pageable pageable);
 
-   // Recherche par auteur (en supposant que 'auteur' est une entité liée et qu'elle contient 'nom' ou 'prenom')
-List<Document> findByAuteurNomContainingOrAuteurPrenomContaining(String nom, String prenom);
+    Page<Document> findByAuteurNomContainingOrAuteurPrenomContaining(String auteurNom, String auteurPrenom, Pageable pageable);
 
-   // Recherche par catégorie (en supposant que 'categorie' est une entité liée avec un champ 'theme')
-List<Document> findByCategorieThemeContaining(String theme);
+    Page<Document> findByCategorieThemeContaining(String theme, Pageable pageable);
 
-   // Recherche combinée avec plusieurs critères
-List<Document> findByMotCleContainingAndTitreContainingAndAuteurNomContainingOrAuteurPrenomContainingAndCategorieThemeContaining(
-        String motCle, String titre, String nomAuteur, String prenomAuteur, String theme);
-
+    Page<Document> findAll(Pageable pageable);
 }
 
