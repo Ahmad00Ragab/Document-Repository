@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DocumentDTO {
+public class DocumentForm {
     private Long id;
     private String titre;
     private String contenu;
@@ -20,8 +20,6 @@ public class DocumentDTO {
     private String resume;
     private String motCle;
     private Long auteurId;        // Reference to the Auteur by ID
-    private String auteurName;
     private Long categorieId;     // Reference to the Categorie by ID
-    private String categoryName;
     private String cheminFichier;
 }

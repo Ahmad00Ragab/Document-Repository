@@ -30,60 +30,6 @@
 
 <div class="container my-4">
     <h3 class="mb-4">Ajouter un Document</h3>
-        <!-- <form th:action="@{/documents/create}" method="post" enctype="multipart/form-data">  
-        <div class="mb-3">
-            <label for="titre" class="form-label">Titre</label>
-            <input type="text" class="form-control" id="titre" name="titre" required>
-        </div>
-
-
-        <div class="mb-3">
-            <label for="contenu" class="form-label">Contenu</label>
-            <textarea class="form-control" id="contenu" name="contenu" rows="4" required></textarea>
-        </div>
-
-        <div class="mb-3">
-            <label for="datePublication" class="form-label">Date de Publication</label>
-            <input type="date" class="form-control" id="datePublication" name="datePublication" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="typeFichier" class="form-label">Type de Fichier</label>
-            <input type="text" class="form-control" id="typeFichier" name="typeFichier">
-        </div>
-
-        <div class="mb-3">
-            <label for="resume" class="form-label">Résumé</label>
-            <textarea class="form-control" id="resume" name="resume" rows="3"></textarea>
-        </div>
-
-        <div class="mb-3">
-            <label for="motCle" class="form-label">Mots-clés</label>
-            <input type="text" class="form-control" id="motCle" name="motCle">
-        </div>
-
-        <div class="mb-3">
-            <label for="auteur" class="form-label">Auteur</label>
-            <select id="auteur" class="form-select" name="auteur.id" required>
-                <option th:each="auteur : ${auteurs}" th:value="${auteur.id}" th:text="${auteur.nom}"></option>
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label for="categorie" class="form-label">Catégorie</label>
-            <select id="categorie" class="form-select" name="categorie.id" required>
-                <option th:each="categorie : ${categories}" th:value="${categorie.id}" th:text="${categorie.theme}"></option>
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label for="file" class="form-label">Télécharger le fichier</label>
-            <input type="file" class="form-control" id="file" name="file" required>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Ajouter</button>
-    </form> -->
-
     <form th:action="@{/documents/create}" method="post" enctype="multipart/form-data" class="mt-4">
         <!-- Titre -->
         <div class="mb-3">

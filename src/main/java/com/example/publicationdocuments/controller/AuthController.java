@@ -11,10 +11,7 @@ public class AuthController {
     
     @GetMapping("/login")
     public String showFormLogin(Authentication authentication) {
-        if (authentication != null && authentication.isAuthenticated()) {
-            // Redirect to a dashboard or home page
-            return "redirect:/home";
-        }
+        System.out.println("inside login");
         return "login";
     }
     
@@ -23,6 +20,5 @@ public class AuthController {
     public String getAccessDeniedPage(Model model) {
         model.addAttribute("error", "You are not allowed to access this page");
         return "errors";
-    }
-    
+    }   
 }

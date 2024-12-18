@@ -9,7 +9,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.example.publicationdocuments.exceptions.ResourceNotFoundException;
 import com.example.publicationdocuments.model.Document;
 import com.example.publicationdocuments.repository.DocumentRepository;
 
@@ -36,7 +35,7 @@ public class DocumentService {
 
     // Méthode pour obtenir un document par son ID
     public Document findById(Long id) {
-        return documentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Document not found with ID: " + id));
+        return documentRepository.findById(id).orElse(null);
     }
 
     // Méthode pour enregistrer un document
