@@ -1,7 +1,7 @@
 package com.example.publicationdocuments.mapper;
 
 
-import com.example.publicationdocuments.dto.AuteurForm;
+import com.example.publicationdocuments.forms.AuteurForm;
 import com.example.publicationdocuments.model.Auteur;
 
 public class AuteurMapper {

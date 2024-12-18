@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.example.publicationdocuments.dto.AuteurForm;
+import com.example.publicationdocuments.forms.AuteurForm;
 import com.example.publicationdocuments.service.AuteurService;
 
 @Controller

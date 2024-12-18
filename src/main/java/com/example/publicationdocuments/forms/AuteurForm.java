@@ -1,4 +1,4 @@
-package com.example.publicationdocuments.dto;
+package com.example.publicationdocuments.forms;
 
 import lombok.Data;
 import java.util.List;

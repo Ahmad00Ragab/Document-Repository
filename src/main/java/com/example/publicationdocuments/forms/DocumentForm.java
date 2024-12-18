@@ -1,4 +1,4 @@
-package com.example.publicationdocuments.dto;
+package com.example.publicationdocuments.forms;
 
 import java.time.LocalDate;
 
@@ -19,7 +19,9 @@ public class DocumentForm {
     private String typeFichier;
     private String resume;
     private String motCle;
-    private Long auteurId;        // Reference to the Auteur by ID
-    private Long categorieId;     // Reference to the Categorie by ID
+    private Long auteurId;               // Reference to the Auteur by ID
+    private String auteurName;           // Reference to the Auteur by Name
+    private String categorieName;        // Reference to the Categorie by ID
+    private Long categorieId;            // Reference to the Categorie by Name
     private String cheminFichier;
 }

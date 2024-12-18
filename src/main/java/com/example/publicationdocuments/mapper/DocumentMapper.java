@@ -1,6 +1,6 @@
 package com.example.publicationdocuments.mapper;
 
-import com.example.publicationdocuments.dto.DocumentForm;
+import com.example.publicationdocuments.forms.DocumentForm;
 import com.example.publicationdocuments.model.Auteur;
 import com.example.publicationdocuments.model.Categorie;
 import com.example.publicationdocuments.model.Document;
@@ -8,8 +8,6 @@ import com.example.publicationdocuments.repository.AuteurRepository;
 import com.example.publicationdocuments.repository.CategorieRepository;
 
 public class DocumentMapper {
-
-
 
 
     // Convert Document entity to DocumentDTO
@@ -23,6 +21,8 @@ public class DocumentMapper {
                 document.getResume(),
                 document.getMotCle(),
                 document.getAuteur() != null ? document.getAuteur().getId() : null,
+                document.getAuteur() != null ? document.getAuteur().getNom() : null,
+                document.getCategorie() != null ? document.getCategorie().getTheme() : null,
                 document.getCategorie() != null ? document.getCategorie().getId() : null,
                 document.getCheminFichier());
     }

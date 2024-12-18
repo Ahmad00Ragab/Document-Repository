@@ -32,6 +32,7 @@ import com.example.publicationdocuments.model.Document;
 import com.example.publicationdocuments.service.AuteurService;
 import com.example.publicationdocuments.service.CategorieService;
 import com.example.publicationdocuments.service.DocumentService;
+import com.example.publicationdocuments.forms.*;
 
 @Controller
 @RequestMapping("/documents")
@@ -50,13 +51,14 @@ public class DocumentController {
 
     // Afficher la liste des documents avec pagination
     @GetMapping
-    public String listDocuments(@RequestParam(defaultValue = "0" )int page,Model model) {
+    public String listDocuments(@RequestParam(defaultValue = "0") int page, Model model) {
         int size = 3; // Number of documents per page
-        List<Document> totalDocuments = documentService.findAll();
-        Page<Document> documents = documentService.findAllWithPagination(PageRequest.of(page, size));
+        List<DocumentForm> totalDocuments = documentService.findAll();
+
+        Page<DocumentForm> documents = documentService.findAllWithPagination(PageRequest.of(page, size));
         System.out.println("Total number of documents: " + totalDocuments.size());
         System.out.println("Documents on current page: " + documents.getContent());
-
+        
         model.addAttribute("documents", documents);
         model.addAttribute("auteurs", auteurService.findAll());
         model.addAttribute("categories", categorieService.findAll());
@@ -66,24 +68,24 @@ public class DocumentController {
         return "documents/list";
     }
 
-
-        // Afficher la liste des documents avec pagination
-        @GetMapping("/user")
-        public String listDocumentsForUser(@RequestParam(defaultValue = "0" )int page,Model model) {
-            int size = 10; // Number of documents per page
-            List<Document> totalDocuments = documentService.findAll();
-            Page<Document> documents = documentService.findAllWithPagination(PageRequest.of(page, size));
-            System.out.println("Total number of documents: " + totalDocuments.size());
-            System.out.println("Documents on current page: " + documents.getContent());
     
-            model.addAttribute("documents", documents);
-            model.addAttribute("auteurs", auteurService.findAll());
-            model.addAttribute("categories", categorieService.findAll());
-            model.addAttribute("totalDocumentsCount", totalDocuments.size());
-            model.addAttribute("totalPages", documents.getTotalPages());
-            model.addAttribute("currentPage", page);
-            return "documents/list-user";
-        }
+    // Afficher la liste des documents avec pagination
+    @GetMapping("/user")
+    public String listDocumentsForUser(@RequestParam(defaultValue = "0") int page, Model model) {
+        int size = 10; // Number of documents per page
+        List<DocumentForm> totalDocuments = documentService.findAll();
+        Page<DocumentForm> documents = documentService.findAllWithPagination(PageRequest.of(page, size));
+        System.out.println("Total number of documents: " + totalDocuments.size());
+        System.out.println("Documents on current page: " + documents.getContent());
+
+        model.addAttribute("documents", documents);
+        model.addAttribute("auteurs", auteurService.findAll());
+        model.addAttribute("categories", categorieService.findAll());
+        model.addAttribute("totalDocumentsCount", totalDocuments.size());
+        model.addAttribute("totalPages", documents.getTotalPages());
+        model.addAttribute("currentPage", page);
+        return "documents/list-user";
+    }
 
     // Endpoint to download files
     @GetMapping("/download/{filename:.+}")
@@ -91,7 +93,8 @@ public class DocumentController {
         System.out.println("file name : " + filename);
         try {
             // Define the path to the upload directory
-            Path filePath = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "static", "uploads", filename);
+            Path filePath = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "static", "uploads",
+                    filename);
 
             // Check if the file exists
             if (!Files.exists(filePath)) {
@@ -116,17 +119,16 @@ public class DocumentController {
         }
     }
 
-
     @GetMapping("/search")
     public String searchDocuments(@RequestParam(required = false) String motCle,
-                                @RequestParam(required = false) String titre,
-                                @RequestParam(required = false) String auteur,
-                                @RequestParam(required = false) String theme,
-                                @RequestParam(defaultValue = "0") int page,
-                                Model model) {
+            @RequestParam(required = false) String titre,
+            @RequestParam(required = false) String auteur,
+            @RequestParam(required = false) String theme,
+            @RequestParam(defaultValue = "0") int page,
+            Model model) {
         int size = 3; // Number of documents per page
-        Page<Document> documents = documentService.searchDocuments(motCle, titre, auteur, theme, PageRequest.of(page, size));
-
+        Page<DocumentForm> documents = documentService.searchDocuments(motCle, titre, auteur, theme,
+                PageRequest.of(page, size));
 
         model.addAttribute("documents", documents);
         // model.addAttribute("totalDocumentsCount", documentsPage.getTotalElements());
@@ -141,21 +143,20 @@ public class DocumentController {
         return "documents/list";
     }
 
-
     // Formulaire pour créer un nouveau document
     @GetMapping("/new")
     public String createDocumentForm(Model model) {
-        model.addAttribute("document", new Document());
+        model.addAttribute("document", new DocumentForm());
         model.addAttribute("auteurs", auteurService.findAll());
         model.addAttribute("categories", categorieService.findAll());
         return "documents/new";
     }
 
     @PostMapping("/create")
-    public String saveDocument(@ModelAttribute Document document,
-                                @RequestParam("auteur.id") Long auteurId,
-                                @RequestParam("categorie.id") Long categorieId,
-                                @RequestParam("file") MultipartFile file) {
+    public String saveDocument(@ModelAttribute DocumentForm document,
+            @RequestParam("auteur.id") Long auteurId,
+            @RequestParam("categorie.id") Long categorieId,
+            @RequestParam("file") MultipartFile file) {
         try {
             if (!file.isEmpty()) {
                 String documentFileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
@@ -166,7 +167,8 @@ public class DocumentController {
 
                 document.setCheminFichier("/uploads/" + documentFileName);
             }
-
+            document.setAuteurId(auteurId);
+            document.setCategorieId(categorieId);
             documentService.save(document);
             return "redirect:/documents";
         } catch (IOException e) {
@@ -185,24 +187,25 @@ public class DocumentController {
     // Formulaire pour éditer un document existant
     @GetMapping("/edit/{id}")
     public String editDocumentForm(@PathVariable Long id, Model model) {
-        Document document = documentService.findById(id);
+        DocumentForm document = documentService.findById(id);
         if (document == null) {
             return "redirect:/documents?error=documentNotFound";
         }
         model.addAttribute("document", document);
         model.addAttribute("auteurs", auteurService.findAll());
         model.addAttribute("categories", categorieService.findAll());
+
         return "documents/edit";
     }
 
     // Mise à jour d'un document
     @PostMapping("/update/{id}")
     public String updateDocument(@PathVariable Long id,
-                                  @ModelAttribute Document document,
-                                  @RequestParam("auteur.id") Long auteurId,
-                                  @RequestParam("categorie.id") Long categorieId,
-                                  @RequestParam("file") MultipartFile file) throws IOException {
-        Document existingDocument = documentService.findById(id);
+            @ModelAttribute DocumentForm document,
+            @RequestParam("auteur.id") Long auteurId,
+            @RequestParam("categorie.id") Long categorieId,
+            @RequestParam("file") MultipartFile file) throws IOException {
+        DocumentForm existingDocument = documentService.findById(id);
         if (existingDocument == null) {
             return "redirect:/documents?error=documentNotFound";
         }
@@ -214,12 +217,12 @@ public class DocumentController {
         existingDocument.setMotCle(document.getMotCle());
         existingDocument.setDatePublication(document.getDatePublication());
 
-        Auteur auteur = auteurService.findById(auteurId);
+        AuteurForm auteur = auteurService.findById(auteurId);
         Categorie categorie = categorieService.findById(categorieId);
 
         if (auteur != null && categorie != null) {
-            existingDocument.setAuteur(auteur);
-            existingDocument.setCategorie(categorie);
+            existingDocument.setAuteurId(auteurId);
+            existingDocument.setCategorieId(categorieId);
 
             if (!file.isEmpty()) {
                 String documentFileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();

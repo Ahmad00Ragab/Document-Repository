@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.example.publicationdocuments.dto.AuteurForm;
 import com.example.publicationdocuments.exceptions.ResourceNotFoundException;
+import com.example.publicationdocuments.forms.AuteurForm;
 import com.example.publicationdocuments.mapper.AuteurMapper;
 import com.example.publicationdocuments.model.Auteur;
 import com.example.publicationdocuments.repository.AuteurRepository;
@@ -20,8 +20,10 @@ public class AuteurService {
     private AuteurRepository auteurRepository;
 
 
-    public List<Auteur> findAll() {
-        return auteurRepository.findAll();
+    public List<AuteurForm> findAll() {
+        return auteurRepository.findAll().stream()
+        .map(AuteurMapper::toDTO) // Map each entity to a DTO
+        .collect(Collectors.toList()); // Collect as a list of DTOs;
     }
 
     

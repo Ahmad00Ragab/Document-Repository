@@ -83,61 +83,42 @@
 <body>
     <div class="container mt-4">
         <h1>Modifier le Document</h1>
+        <form th:action="@{/documents/update/{id}(id=${document.id})}" method="post" enctype="multipart/form-data">
+            <label for="titre" class="form-label">Titre :</label>
+            <input type="text" id="titre" name="titre" class="form-control" th:value="${document.titre}" required>
 
-        <form th:action="@{/documents/update/{id}(id=${document.id})}" th:object="${document}" method="post" enctype="multipart/form-data">
-            <div class="mb-3">
-                <label for="titre" class="form-label">Titre :</label>
-                <input type="text" id="titre" th:field="*{titre}" class="form-control" required>
+            <label for="contenu" class="form-label">Contenu :</label>
+            <textarea id="contenu" name="contenu" class="form-control" th:text="${document.contenu}" required></textarea>
+
+            <label for="typeFichier" class="form-label">Type de Fichier :</label>
+            <input type="text" id="typeFichier" name="typeFichier" class="form-control" th:value="${document.typeFichier}">
+
+            <label for="resume" class="form-label">Résumé :</label>
+            <input type="text" id="resume" name="resume" class="form-control" th:value="${document.resume}">
+
+            <label for="motCle" class="form-label">Mots-clés :</label>
+            <input type="text" id="motCle" name="motCle" class="form-control" th:value="${document.motCle}">
+
+            <label for="auteur" class="form-label">Auteur :</label>
+            <select id="auteur" name="auteurId" class="form-select">
+                <option th:each="auteur : ${auteurs}" th:value="${auteur.id}" th:text="${auteur.auteurName}" th:selected="${document.auteurId == auteur.id}"></option>
+            </select>
+
+            <label for="categorie" class="form-label">Catégorie :</label>
+            <select id="categorie" name="categorieId" class="form-select">
+                <option th:each="categorie : ${categories}" th:value="${categorie.id}" th:text="${categorie.theme}" th:selected="${document.categorieId == categorie.id}"></option>
+            </select>
+
+            <label for="file" class="form-label">Fichier :</label>
+            <input type="file" id="file" name="file" class="form-control">
+
+            <label for="datePublication" class="form-label">Date de publication :</label>
+            <input type="date" id="datePublication" name="datePublication" class="form-control" th:value="${document.datePublication}" required>
+
+            <div class="button-container mt-3">
+                <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                <button type="button" class="btn btn-secondary" th:onclick="'window.location.href=\'' + @{/documents} + '\''">Annuler</button>
             </div>
-
-            <div class="mb-3">
-                <label for="contenu" class="form-label">Contenu :</label>
-                <textarea id="contenu" th:field="*{contenu}" class="form-control" required></textarea>
-            </div>
-
-            <div class="mb-3">
-                <label for="typeFichier" class="form-label">Type de Fichier :</label>
-                <input type="text" id="typeFichier" th:field="*{typeFichier}" class="form-control">
-            </div>
-
-            <div class="mb-3">
-                <label for="resume" class="form-label">Résumé :</label>
-                <input type="text" id="resume" th:field="*{resume}" class="form-control">
-            </div>
-         
-
-            <div class="mb-3">
-                <label for="motCle" class="form-label">Mots-clés :</label>
-                <input type="text" id="motCle" th:field="*{motCle}" class="form-control">
-            </div>
-
-            <div class="mb-3">
-                <label for="auteur" class="form-label">Auteur :</label>
-                <select id="auteur" th:field="*{auteur.id}" class="form-select">
-                    <option th:each="auteur : ${auteurs}" th:value="${auteur.id}" 
-                            th:text="${auteur.nom} + ' ' + ${auteur.prenom}"></option>
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label for="categorie" class="form-label">Catégorie :</label>
-                <select id="categorie" th:field="*{categorie.id}" class="form-select">
-                    <option th:each="categorie : ${categories}" th:value="${categorie.id}" th:text="${categorie.theme}"></option>
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label for="file" class="form-label">Fichier :</label>
-                <input type="file" id="file" name="file" class="form-control">
-            </div>
-
-            <div class="mb-3">
-                <label for="datePublication" class="form-label">Date de publication :</label>
-                <input type="date" id="datePublication" th:field="*{datePublication}" class="form-control" required>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Mettre à jour</button>
-            <a href="/documents" class="btn btn-primary">Cancel</button>
         </form>
 
         <!-- Affichage des erreurs -->

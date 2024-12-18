@@ -5,6 +5,7 @@ import com.example.publicationdocuments.model.Document;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+
 public interface DocumentRepository extends JpaRepository<Document, Long> {
     Page<Document> findByMotCleContainingAndTitreContainingAndAuteurNomContainingOrAuteurPrenomContainingAndCategorieThemeContaining(
             String motCle, String titre, String auteurNom, String auteurPrenom, String theme, Pageable pageable);
