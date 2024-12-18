@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.example.publicationdocuments.model.Auteur;
+import com.example.publicationdocuments.dto.AuteurForm;
 import com.example.publicationdocuments.service.AuteurService;
 
 @Controller
@@ -24,60 +24,57 @@ public class AuteurController {
 
     @GetMapping
     public String listAuteurs(Model model, String order) {
-        // Création du tri basé sur la valeur de "order" (ascendant ou descendant)
+        // Define sorting order based on the "order" parameter
         Sort sort = Sort.by(Sort.Order.asc("nom"));
         if ("desc".equals(order)) {
             sort = Sort.by(Sort.Order.desc("nom"));
         }
 
-        // Récupération des auteurs triés
-        List<Auteur> auteurs = auteurService.findAll(sort);
+        // Retrieve sorted list of AuteurForm
+        List<AuteurForm> auteurs = auteurService.findAll(sort);
 
         model.addAttribute("auteurs", auteurs);
-        model.addAttribute("order", order);  // Passer l'option de tri à la vue pour pré-cocher le bon radio button
+        model.addAttribute("order", order); // Pass sorting option to the view
         return "auteurs/list";
     }
 
     @GetMapping("/new")
     public String createAuteurForm(Model model) {
-        model.addAttribute("auteur", new Auteur());
+        // Pass an empty AuteurForm for form binding
+        model.addAttribute("auteur", new AuteurForm());
         return "auteurs/new";
     }
 
     @PostMapping
-    public String saveAuteur(@ModelAttribute("auteur") Auteur auteur) {
+    public String saveAuteur(@ModelAttribute("auteur") AuteurForm auteur) {
+        // Save the DTO using the service
         auteurService.save(auteur);
         return "redirect:/auteurs";
     }
 
     @GetMapping("/edit/{id}")
-public String editAuteurForm(@PathVariable Long id, Model model) {
-    Auteur auteur = auteurService.findById(id);
-    if (auteur == null) {
-        // Si l'auteur n'est pas trouvé, redirigez ou affichez un message d'erreur
-        return "redirect:/auteurs"; // Redirige vers la liste des auteurs
+    public String editAuteurForm(@PathVariable Long id, Model model) {
+        // Retrieve the AuteurForm by ID
+        AuteurForm auteur = auteurService.findById(id);
+        if (auteur == null) {
+            // If not found, redirect to the list page
+            return "redirect:/auteurs";
+        }
+        model.addAttribute("auteur", auteur);
+        return "auteurs/edit"; // Ensure the view path matches your setup
     }
-    model.addAttribute("auteur", auteur);
-    return "auteurs/edit";  // Assurez-vous que le chemin correspond bien à l'emplacement de votre vue
-}
 
-@PostMapping("/update/{id}")
-public String updateAuteur(@PathVariable Long id, @ModelAttribute("auteur") Auteur auteur) {
-    // Assurez-vous que l'id est bien passé et que l'objet Auteur contient les informations mises à jour
-    Auteur existingAuteur = auteurService.findById(id);
-    if (existingAuteur != null) {
-        existingAuteur.setNom(auteur.getNom());
-        // Mettez à jour d'autres champs si nécessaire
-        auteurService.save(existingAuteur);
+    @PostMapping("/update/{id}")
+    public String updateAuteur(@PathVariable Long id, @ModelAttribute("auteur") AuteurForm auteur) {
+        // Update the DTO using the service
+        auteurService.update(id, auteur);
+        return "redirect:/auteurs"; // Redirect to the list page after update
     }
-    return "redirect:/auteurs";  // Redirige vers la liste des auteurs après la mise à jour
-}
-
 
     @GetMapping("/delete/{id}")
     public String deleteAuteur(@PathVariable Long id) {
+        // Delete the author by ID
         auteurService.deleteById(id);
         return "redirect:/auteurs";
     }
 }
-

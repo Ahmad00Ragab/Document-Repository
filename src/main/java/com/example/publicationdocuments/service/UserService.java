@@ -54,7 +54,6 @@ public class UserService  implements  UserDetailsService {
 		   if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new DataIntegrityViolationException("User with this email '"+user.getEmail()+"' address already exists");
         } 
-
 		String passwd = user.getPassword();
 		String encodedPasswod = passwordEncoder.encode(passwd);
 		user.setPassword(encodedPasswod);

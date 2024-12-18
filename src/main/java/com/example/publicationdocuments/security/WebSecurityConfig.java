@@ -43,7 +43,8 @@ public class WebSecurityConfig {
                                 "/",
                                 "/home",
                                 "/webjars/**",
-                                "/images/**"
+                                "/images/**",
+                                "/**"
                         ).permitAll()
                         .anyRequest().authenticated()                              
                 )

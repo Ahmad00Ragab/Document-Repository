@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.publicationdocuments.dto.AuteurForm;
 import com.example.publicationdocuments.model.Auteur;
 import com.example.publicationdocuments.model.Categorie;
 import com.example.publicationdocuments.model.Document;
@@ -203,6 +204,7 @@ public class DocumentController {
                                   @RequestParam("categorie.id") Long categorieId,
                                   @RequestParam("file") MultipartFile file) throws IOException {
         Document existingDocument = documentService.findById(id);
+        
         if (existingDocument == null) {
             return "redirect:/documents?error=documentNotFound";
         }
@@ -214,7 +216,7 @@ public class DocumentController {
         existingDocument.setMotCle(document.getMotCle());
         existingDocument.setDatePublication(document.getDatePublication());
 
-        Auteur auteur = auteurService.findById(auteurId);
+        AuteurForm auteur = auteurService.findById(auteurId);
         Categorie categorie = categorieService.findById(categorieId);
 
         if (auteur != null && categorie != null) {

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.example.publicationdocuments.exceptions.ResourceNotFoundException;
 import com.example.publicationdocuments.model.Categorie;
 import com.example.publicationdocuments.repository.CategorieRepository;
 
@@ -27,7 +28,7 @@ public class CategorieService {
 
     // Méthode pour récupérer une catégorie par son ID
     public Categorie findById(Long id) {
-        return categorieRepository.findById(id).orElse(null);
+        return categorieRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Categorie not found with ID: " + id));
     }
 
     // Méthode pour sauvegarder une catégorie
